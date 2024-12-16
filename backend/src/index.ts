@@ -54,4 +54,6 @@ app.get("/transform", async (req, res) => {
   }
 });
 
-app.listen(8080);
+app.listen(8080, () => {
+  console.log("Listening on 8080");
+});
