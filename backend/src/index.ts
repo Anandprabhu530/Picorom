@@ -8,19 +8,24 @@ const app = express();
 app.use(express.json());
 
 app.get("/transform", async (req, res) => {
+  // get the filenaname and conversion type
   const {fileName, coversionType} = req.body;
-  const trimmedFileName = fileName.split(".");
+
+  // Obtain the filename without extension
+  const trimmedFileName = fileName.split(".")[0];
 
   //download video from google storage
   await downloadFromBucket(fileName);
 
+  //create the input path
   const inputFilePath = path.resolve(__dirname, ".", "inputDir", fileName);
 
+  // create output path to store the converted image
   const outputFilePath = path.resolve(
     __dirname,
     ".",
     "outputDir",
-    `${trimmedFileName[0]}.${coversionType}`
+    `transform-${trimmedFileName}.${coversionType}`
   );
   try {
     // convert filetype
@@ -29,20 +34,24 @@ app.get("/transform", async (req, res) => {
       .toFile(outputFilePath);
 
     //upload file to Bucket
-    await uploadToBucket(`trimmedFileName[0].${coversionType}`);
+    await uploadToBucket(`transform-${trimmedFileName}.${coversionType}`);
 
     // clean up files
     await deleteFile(`./inputDir/${fileName}`);
-    await deleteFile(`./outputDir/${trimmedFileName[0]}.${coversionType}`);
+    await deleteFile(
+      `./outputDir/transform-${trimmedFileName}.${coversionType}`
+    );
 
+    // respond with 200
     res.status(200).json({message: data});
   } catch (error) {
     // clean up files
     await deleteFile(`./inputDir/${fileName}`);
-    await deleteFile(`./outputDir/${trimmedFileName[0]}.${coversionType}`);
-
-    res.status(500).json({message: null});
+    await deleteFile(
+      `./outputDir/transform-${trimmedFileName}.${coversionType}`
+    );
+    res.status(500).json({message: error});
   }
 });
 
-app.listen(6969);
+app.listen(8080);
