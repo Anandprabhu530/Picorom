@@ -1,9 +1,10 @@
 import {initializeApp} from "firebase-admin/app";
 import {onCall} from "firebase-functions/v2/https";
 import {Storage} from "@google-cloud/storage";
-require("dotenv").config();
+import dotenv from "dotenv";
 
 initializeApp();
+dotenv.config();
 
 const storage = new Storage();
 
@@ -13,7 +14,7 @@ const RETRY_LIMIT = 3; // Number of retry attempts
 const RETRY_DELAY = 2000; // Delay between retries in milliseconds
 
 export const callTransformFunction = onCall(
-  {cors: [/firebase\.com$/, "http://localhost:3000"]},
+  {cors: [/firebase\.com$/, "http://localhost:5173"]},
   async (request) => {
     const {fileName, coversionType} = request.data;
 
@@ -82,7 +83,7 @@ export const callTransformFunction = onCall(
 );
 
 export const generateUploadURL = onCall(
-  {cors: [/firebase\.com$/, "http://localhost:3000"]},
+  {cors: [/firebase\.com$/, "http://localhost:5173"]},
   async (request) => {
     const data = request.data;
     if (!data.User) {
