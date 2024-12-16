@@ -4,8 +4,8 @@ import {Storage} from "@google-cloud/storage";
 
 const storage = new Storage();
 
-const inputBucket = "input-bucket";
-const outputBucket = "output-bucket";
+const inputBucket = "input-bucket-image-processing";
+const outputBucket = "output-bucket-image-processing";
 
 const inputDir = "./inputDir";
 const outputDir = "./outputDir";
@@ -29,7 +29,7 @@ export async function uploadToBucket(fileName: string) {
   console.log(`Processed video uploaded to bucket: ${fileName}`);
 }
 
-export async function delete_file(fileName: string) {
+export async function deleteFile(fileName: string) {
   const currentDir = path.resolve(__dirname, fileName);
 
   return new Promise<void>((resolve, reject) => {

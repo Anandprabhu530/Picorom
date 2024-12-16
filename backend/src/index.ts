@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import sharp from "sharp";
-import {delete_file, downloadFromBucket, uploadToBucket} from "./utils";
+import {deleteFile, downloadFromBucket, uploadToBucket} from "./utils";
 
 const app = express();
 
@@ -32,16 +32,16 @@ app.get("/transform", async (req, res) => {
     await uploadToBucket(`trimmedFileName[0].${coversionType}`);
 
     // clean up files
-    await delete_file(`./inputDir/${fileName}`);
-    await delete_file(`./outputDir/${trimmedFileName[0]}.${coversionType}`);
+    await deleteFile(`./inputDir/${fileName}`);
+    await deleteFile(`./outputDir/${trimmedFileName[0]}.${coversionType}`);
 
     res.status(200).json({message: data});
   } catch (error) {
     // clean up files
-    await delete_file(`./inputDir/${fileName}`);
-    await delete_file(`./outputDir/${trimmedFileName[0]}.${coversionType}`);
+    await deleteFile(`./inputDir/${fileName}`);
+    await deleteFile(`./outputDir/${trimmedFileName[0]}.${coversionType}`);
 
-    res.status(200).json({message: "Not converted"});
+    res.status(500).json({message: null});
   }
 });
 
