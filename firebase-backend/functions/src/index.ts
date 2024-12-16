@@ -90,12 +90,15 @@ export const generateUploadURL = onCall(
     }
     const fileName = data.fileName;
 
+    // Generate a signed URL for the file in the input bucket.
     const [url] = await inputBucket.file(fileName).getSignedUrl({
       version: "v4",
       action: "write",
+      // 15 minutes expiration time
       expires: Date.now() + 15 * 60 * 1000,
     });
 
+    // Return the signed URL and the file name to the client.
     return {url, fileName};
   }
 );
