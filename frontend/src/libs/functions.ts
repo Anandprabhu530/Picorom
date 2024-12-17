@@ -4,8 +4,11 @@ import {app} from "./firebase";
 const functions = getFunctions(app);
 
 const generateUploadURL = httpsCallable(functions, "generateUploadURL");
+const callTransformFunction = httpsCallable(functions, "callTransformFunction");
 
 export async function uploadImage(file: File) {
+  const coversionType = file.type === "image/jpeg" ? "png" : "jpg";
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const response: any = await generateUploadURL({
     fileName: file.name,
@@ -18,5 +21,13 @@ export async function uploadImage(file: File) {
       "Content-Type": file.type,
     },
   });
-  return response?.data;
+
+  console.log(response?.data);
+
+  const transformImage = await callTransformFunction({
+    fileName: response?.data.fileName,
+    coversionType: coversionType,
+  });
+
+  console.log(transformImage);
 }
