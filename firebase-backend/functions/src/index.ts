@@ -86,11 +86,7 @@ export const generateUploadURL = onCall(
   {cors: [/firebase\.com$/, "http://localhost:5173"]},
   async (request) => {
     const data = request.data;
-    if (!data.User) {
-      throw new Error("User not authenticated");
-    }
-    const fileName = data.fileName;
-
+    const fileName = `${Date.now}_${data.fileName}`;
     // Generate a signed URL for the file in the input bucket.
     const [url] = await inputBucket.file(fileName).getSignedUrl({
       version: "v4",
