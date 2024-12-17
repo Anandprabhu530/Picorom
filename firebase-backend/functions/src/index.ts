@@ -50,7 +50,7 @@ export const callTransformFunction = onCall(
     try {
       // Cannot be called from outside. Only internal invocations allowed
       const transformImage = await fetchWithRetry(process.env.URL!, {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
