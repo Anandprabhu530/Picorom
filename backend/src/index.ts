@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/transform", async (req, res) => {
+app.post("/transform", async (req, res) => {
   // get the filenaname and conversion type
   const {fileName, coversionType} = req.body;
 
