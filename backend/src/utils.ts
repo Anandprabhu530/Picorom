@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 import {Storage} from "@google-cloud/storage";
 
 const storage = new Storage();
@@ -9,6 +8,17 @@ const outputBucket = "output-bucket-image-processing";
 
 const inputDir = "./inputDir";
 const outputDir = "./outputDir";
+
+export async function dir_exists() {
+  check_dir_availablility(inputDir);
+  check_dir_availablility(outputDir);
+}
+
+function check_dir_availablility(dir_path: string) {
+  if (!fs.existsSync(dir_path)) {
+    fs.mkdirSync(dir_path, {recursive: true});
+  }
+}
 
 export async function downloadFromBucket(fileName: string) {
   try {
@@ -30,11 +40,9 @@ export async function uploadToBucket(fileName: string) {
 }
 
 export async function deleteFile(fileName: string) {
-  const currentDir = path.resolve(__dirname, fileName);
-
   return new Promise<void>((resolve, reject) => {
-    if (fs.existsSync(currentDir)) {
-      fs.unlink(currentDir, (error) => {
+    if (fs.existsSync(fileName)) {
+      fs.unlink(fileName, (error) => {
         if (error) {
           console.log(`An error occured ${error?.message}`);
           reject(error);

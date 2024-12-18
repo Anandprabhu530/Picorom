@@ -1,11 +1,18 @@
 import express from "express";
-import path from "path";
 import sharp from "sharp";
-import {deleteFile, downloadFromBucket, uploadToBucket} from "./utils";
+import {
+  deleteFile,
+  dir_exists,
+  downloadFromBucket,
+  uploadToBucket,
+} from "./utils";
 
 const app = express();
 
 app.use(express.json());
+dir_exists();
+const inputDir = "./inputDir";
+const outputDir = "./outputDir";
 
 app.post("/transform", async (req, res) => {
   // get the filenaname and conversion type
@@ -18,15 +25,11 @@ app.post("/transform", async (req, res) => {
   await downloadFromBucket(fileName);
 
   //create the input path
-  const inputFilePath = path.resolve(__dirname, ".", "inputDir", fileName);
+  const inputFilePath = `${inputDir}/${fileName}`;
 
   // create output path to store the converted image
-  const outputFilePath = path.resolve(
-    __dirname,
-    ".",
-    "outputDir",
-    `transform-${trimmedFileName}.${coversionType}`
-  );
+  const outputFilePath = `${outputDir}/transform_${trimmedFileName}.${coversionType}`;
+
   try {
     // convert filetype
     const data = await sharp(inputFilePath)
@@ -34,12 +37,12 @@ app.post("/transform", async (req, res) => {
       .toFile(outputFilePath);
 
     //upload file to Bucket
-    await uploadToBucket(`transform-${trimmedFileName}.${coversionType}`);
+    await uploadToBucket(`transform_${trimmedFileName}.${coversionType}`);
 
     // clean up files
     await deleteFile(`./inputDir/${fileName}`);
     await deleteFile(
-      `./outputDir/transform-${trimmedFileName}.${coversionType}`
+      `./outputDir/transform_${trimmedFileName}.${coversionType}`
     );
 
     // respond with 200
@@ -48,7 +51,7 @@ app.post("/transform", async (req, res) => {
     // clean up files
     await deleteFile(`./inputDir/${fileName}`);
     await deleteFile(
-      `./outputDir/transform-${trimmedFileName}.${coversionType}`
+      `./outputDir/transform_${trimmedFileName}.${coversionType}`
     );
     res.status(500).json({message: error});
   }
