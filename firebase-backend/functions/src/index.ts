@@ -10,6 +10,7 @@ const storage = new Storage();
 
 const inputBucket = storage.bucket("input-bucket-image-processing");
 const outputBucket = storage.bucket("output-bucket-image-processing");
+
 const RETRY_LIMIT = 3; // Number of retry attempts
 const RETRY_DELAY = 2000; // Delay between retries in milliseconds
 
@@ -17,7 +18,7 @@ export const callTransformFunction = onCall(
   {cors: [/firebase\.com$/, "http://localhost:5173"]},
   async (request) => {
     const {fileName, coversionType} = request.data;
-
+    console.log(fileName, coversionType);
     // Function to handle retries for transformImage
     const fetchWithRetry = async (
       url: string,
@@ -60,12 +61,14 @@ export const callTransformFunction = onCall(
         }),
       });
 
+      const newFilename = `transform_${
+        fileName.split(".")[0]
+      }.${coversionType}`;
+      console.log(newFilename);
       // Check the result of the transformation
-      if (transformImage.ok) {
+      if (transformImage.message) {
         // If transformation is successful, generate signed URL
-        const file = outputBucket.file(
-          `transform-${fileName}.${coversionType}`
-        );
+        const file = outputBucket.file(newFilename);
         const [signedUrl] = await file.getSignedUrl({
           action: "read",
           expires: Date.now() + 15 * 60 * 1000, // 15 minutes expiration time
