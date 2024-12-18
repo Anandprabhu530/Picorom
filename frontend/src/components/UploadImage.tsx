@@ -1,4 +1,5 @@
-import {useState, useCallback} from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {useState, useCallback, useEffect} from "react";
 import {useDropzone, FileRejection, DropzoneOptions} from "react-dropzone";
 import {uploadImage} from "../libs/functions";
 
@@ -6,8 +7,7 @@ const UploadImage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [process, setProcess] = useState(false);
-  // const [download_url, setDownloadURL] = useState("");
+  const [download_url, setDownloadURL] = useState("");
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -45,23 +45,35 @@ const UploadImage = () => {
     }
 
     setLoading(true);
-    const response = await uploadImage(file);
-    console.log(response);
+    const response: any = await uploadImage(file);
+    setDownloadURL(response);
     setLoading(false);
-    //add state to process
-    setProcess(false);
   };
+  useEffect(() => {
+    if (download_url.length !== 0 && file) {
+      const res = async () => {
+        const link = document.createElement("a");
+        link.download =
+          file?.name.split(".")[0] + file.type === "image/jpeg" ? "png" : "jpg";
+        link.href = download_url;
+        document.body.appendChild(link);
+        link.click();
+        setFile(null);
+      };
+      res();
+    }
+  }, [download_url, file]);
 
   return (
     <div className="w-full flex flex-col items-center justify-center h-[90%]">
-      <div className="text-3xl font-semibold mb-20">
-        Convert PNG to JPEG and vice-versa
+      <div className="text-3xl font-semibold mb-20 w-full text-center">
+        Convert PNG to JPG and vice-versa
       </div>
-      <div className="w-[600px] flex items-center relative justify-center h-[180px]">
+      <div className="w-[300px] lg:w-[600px] flex items-center relative justify-center h-[180px]">
         <div className="mt-10">
           <div
             {...getRootProps()}
-            className="border-2 border-dashed shadow-xl flex items-center justify-center border-gray-500 rounded-lg p-4 text-center cursor-pointer w-[600px] h-[200px]"
+            className="border-2 border-dashed shadow-xl flex items-center justify-center border-gray-500 rounded-lg p-4 text-center cursor-pointer w-[300px] lg:w-[600px] h-[200px]"
           >
             <input {...getInputProps()} />
             {isDragActive ? (
@@ -94,9 +106,9 @@ const UploadImage = () => {
               <div className="w-full flex items-center justify-center">
                 <button
                   onClick={handleUpload}
-                  className="mt-2 px-4 py-2 text-lg font-normal bg-black text-white rounded hover:bg-neutral-900 transition duration-200"
+                  className="mt-4 px-4 py-1 text-lg font-normal bg-white text-black rounded hover:bg-neutral-300 transition duration-200"
                 >
-                  {loading ? "Uploading" : process ? "Processing" : "Convert"}
+                  {loading ? "Converting" : "Convert"}
                 </button>
               </div>
             </div>

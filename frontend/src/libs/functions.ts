@@ -22,12 +22,11 @@ export async function uploadImage(file: File) {
     },
   });
 
-  console.log(response?.data);
-
   const transformImage = await callTransformFunction({
     fileName: response?.data.fileName,
     coversionType: coversionType,
   });
 
-  console.log(transformImage);
+  console.log(transformImage.data);
+  return transformImage.data;
 }
