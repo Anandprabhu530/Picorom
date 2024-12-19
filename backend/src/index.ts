@@ -36,6 +36,8 @@ app.post("/transform", async (req, res) => {
       .toFormat(coversionType)
       .toFile(outputFilePath);
 
+    console.log("Image Converted");
+
     //upload file to Bucket
     await uploadToBucket(`transform_${trimmedFileName}.${coversionType}`);
 
