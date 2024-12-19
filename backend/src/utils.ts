@@ -36,7 +36,7 @@ export async function uploadToBucket(fileName: string) {
   await storage
     .bucket(outputBucket)
     .upload(sourcePath, {destination: fileName});
-  console.log(`Processed Image uploaded to bucket: ${fileName}`);
+  console.log(`Processed Image uploaded: ${fileName}`);
 }
 
 export async function deleteFile(fileName: string) {
